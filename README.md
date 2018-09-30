@@ -46,13 +46,13 @@ Here is an example of a set of rules:
 
 ```json
 {
-	"rules" : [
-		{
-			"allow": [
-				"all"
-			]
-		}
-	]
+  "rules" : [
+    {
+      "allow": [
+        "all"
+      ]
+    }
+  ]
 }
 ```
 
@@ -60,18 +60,18 @@ Here is an example of a set of rules:
 
 ```json
 {
-	"rules" : [
-		{
-			"allow": [
-				"openstorage.api.OpenStorageCluster"
-			]
-		},
-		{
-			"deny": [
-				"all"
-			]
-		}
-	]
+  "rules" : [
+    {
+      "allow": [
+        "openstorage.api.OpenStorageCluster"
+      ]
+    },
+    {
+      "deny": [
+        "all"
+      ]
+    }
+  ]
 }
 ```
 
@@ -79,23 +79,23 @@ Here is an example of a set of rules:
 
 ```json
 {
-	"rules" : [
-		{
-			"deny": [
-				"openstorage.api.OpenStorageVolume/Delete"
-			]
-		}
-		{
-			"allow": [
-				"openstorage.api.OpenStorageVolume"
-			]
-		},
-		{
-			"deny": [
-				"all"
-			]
-		}
-	]
+  "rules" : [
+    {
+      "deny": [
+        "openstorage.api.OpenStorageVolume/Delete"
+      ]
+    }
+    {
+      "allow": [
+        "openstorage.api.OpenStorageVolume"
+      ]
+    },
+    {
+      "deny": [
+        "all"
+      ]
+    }
+  ]
 }
 ```
 
