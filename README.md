@@ -75,7 +75,7 @@ Here is an example of a set of rules:
 }
 ```
 
-* Allow only all API volume calls, with the exception of being unable delete any:
+* Allow only Identity service and API volume and snapshot calls, with the exception of being unable delete a volume or snapshots:
 
 ```json
 {
@@ -87,7 +87,8 @@ Here is an example of a set of rules:
     }
     {
       "allow": [
-        "openstorage.api.OpenStorageVolume"
+        "openstorage.api.OpenStorageVolume",
+        "openstorage.api.OpenStorageIdentity"
       ]
     },
     {
