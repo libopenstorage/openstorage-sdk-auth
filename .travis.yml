@@ -1,0 +1,12 @@
+services:
+  - docker
+language: go
+go:
+  - 1.10.5
+install:
+  - go get -u github.com/vbatts/git-validation
+script:
+  - git-validation -run DCO,short-subject
+  - go fmt $(go list ./... | grep -v vendor) | wc -l | grep 0
+  - go vet $(go list ./... | grep -v vendor)
+  - go test $(go list ./... | grep -v vendor)
