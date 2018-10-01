@@ -58,3 +58,27 @@ func TestTokenSharedSecretSimple(t *testing.T) {
 	assert.Contains(t, tokenClaims, "role")
 	assert.Equal(t, claims.Role, tokenClaims["role"])
 }
+
+func TestTokenExpired(t *testing.T) {
+
+	key := []byte("mysecret")
+	claims := Claims{}
+	sig := Signature{
+		Type: jwt.SigningMethodHS256,
+		Key:  key,
+	}
+	opts := Options{
+		Expiration: time.Now().Add(-(time.Minute * 10)).Unix(),
+	}
+
+	// Create
+	rawtoken, err := Token(&claims, &sig, &opts)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, rawtoken)
+
+	// Verify
+	token, err := jwt.Parse(rawtoken, func(token *jwt.Token) (interface{}, error) {
+		return key, nil
+	})
+	assert.False(t, token.Valid)
+}
