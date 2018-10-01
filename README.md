@@ -45,59 +45,32 @@ Here is an example of a set of rules:
 
 * Allow any call:
 
-```json
-{
-  "rules" : [
-    {
-      "allow": [
-        "all"
-      ]
-    }
-  ]
-}
+```yaml
+rules:
+  - allow
+    - all
 ```
 
 * Allow only cluster operations:
 
-```json
-{
-  "rules" : [
-    {
-      "allow": [
-        "openstorage.api.OpenStorageCluster"
-      ]
-    },
-    {
-      "deny": [
-        "all"
-      ]
-    }
-  ]
-}
+```yaml
+rules:
+  - allow
+    - openstorage.api.OpenStorageCluster
+  - deny
+    - all
 ```
 
 * Allow only Identity service and API volume and snapshot calls, with the exception of being unable delete a volume or snapshots:
 
-```json
-{
-  "rules" : [
-    {
-      "deny": [
-        "openstorage.api.OpenStorageVolume/Delete"
-      ]
-    }
-    {
-      "allow": [
-        "openstorage.api.OpenStorageVolume",
-        "openstorage.api.OpenStorageIdentity"
-      ]
-    },
-    {
-      "deny": [
-        "all"
-      ]
-    }
-  ]
-}
+```yaml
+rules:
+  - deny:
+    - openstorage.api.OpenStorageVolume/Delete
+  - allow:
+    - openstorage.api.OpenStorageVolume
+    - openstorage.api.OpenStorageIdentity
+  - deny:
+    - all
 ```
 

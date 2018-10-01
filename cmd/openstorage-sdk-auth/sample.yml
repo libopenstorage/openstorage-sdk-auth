@@ -1,6 +1,11 @@
 name: Luis Pabon
 email: luis@portworx.com
-role: admin
+role: volumecreator
 rules:
+  - deny:
+    - openstorage.api.OpenStorageVolume/Delete
   - allow:
+    - openstorage.api.OpenStorageVolume
+    - openstorage.api.OpenStorageIdentity
+  - deny:
     - all
