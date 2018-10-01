@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/libopenstorage/openstorage-sdk-auth.svg?branch=master)](https://travis-ci.org/libopenstorage/openstorage-sdk-auth)
 # OpenStorage SDK Auth
 
 This repo houses the libraries and CLI to create Auth tokens for OpenStorage SDK.
