@@ -22,8 +22,8 @@ import (
 
 // Rule provides a method to provide a custom authorization
 type Rule struct {
-	Allow []string `json:"allow" yaml:"allow"`
-	Deny  []string `json:"deny" yaml:"deny"`
+	Allow []string `json:"allow,omitempty" yaml:"allow,omitempty"`
+	Deny  []string `json:"deny,omitempty" yaml:"deny,omitempty"`
 }
 
 // Claims provides information about the claims in the token
