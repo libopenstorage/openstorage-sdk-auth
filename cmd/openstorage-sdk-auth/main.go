@@ -42,6 +42,7 @@ var (
 	config = flag.String("auth-config", "", "Auth account information file providing "+
 		"email, name, etc.")
 	showVersion = flag.Bool("version", false, "Show version")
+	output      = flag.String("output", "", "Output token to file instead of standard out")
 	version     = "(dev)"
 )
 
@@ -120,5 +121,9 @@ func main() {
 	}
 
 	// Print token
-	fmt.Println(token)
+	if len(*output) != 0 {
+		ioutil.WriteFile(*output, []byte(token), 0600)
+	} else {
+		fmt.Println(token)
+	}
 }
