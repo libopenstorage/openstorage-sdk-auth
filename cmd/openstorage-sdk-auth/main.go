@@ -29,7 +29,10 @@ import (
 )
 
 var (
-	secret      = flag.String("shared-secret", "", "Shared secret")
+	secret      = flag.String("shared-secret", "", "Shared secret to sign token")
+	rsaPem      = flag.String("rsa-private-keyfile", "", "RSA Private file to sign token")
+	ecdsaPem    = flag.String("ecdsa-private-keyfile", "", "ECDSA Private file to sign token")
+	duration    = flag.String("token-duration", "1d", "Duration of time where the token will be valid")
 	config      = flag.String("auth-config", "", "Auth configuaration file")
 	showVersion = flag.Bool("version", false, "Show version")
 	version     = "(dev)"
@@ -46,6 +49,7 @@ func main() {
 		fmt.Println("Must provide a file name")
 		os.Exit(1)
 	}
+
 	// This is temporary. This program will also support RSA certs
 	if len(*secret) == 0 {
 		fmt.Println("Must provide a shared secret")
