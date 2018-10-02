@@ -34,15 +34,19 @@ type Claims struct {
 	Rules []Rule `json:"rules" yaml:"rules"`
 }
 
+// Signature describes the signature type using definitions from
+// the jwt package
 type Signature struct {
 	Type jwt.SigningMethod
 	Key  interface{}
 }
 
+// Options provide any options to apply to the token
 type Options struct {
 	Expiration int64
 }
 
+// Token returns a signed JWT containing the claims provided
 func Token(
 	claims *Claims,
 	signature *Signature,
