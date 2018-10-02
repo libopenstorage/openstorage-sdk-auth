@@ -11,6 +11,14 @@ libraries for users and developers to create auth tokens for OpenStorage SDK.
 
 OpenStorage Auth tokens are JWTs based loosely based on the OIDC specification.
 
+## Installation
+
+A container will be available, but in the meantime you can do the following:
+
+```
+go install -u github.com/libopenstorage/openstorage-sdk-auth/cmd/openstorage-sdk-auth
+```
+
 ## Token Specification
 OpenStorage SDK tokens are JWT tokens whose _claims_ values are highlighted
 below:
