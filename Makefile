@@ -17,11 +17,11 @@ openstorage-sdk-auth:
 	rm -rf _tmp
 	mkdir -p _tmp
 	CGO_ENABLED=0 GOOS=linux go build \
-				-a -ldflags '-X main.version=$(REV) -extldflags "-static"' \
-				-o ./_tmp/openstorage-sdk-auth ./cmd/openstorage-sdk-auth
+		-a -ldflags '-X main.version=$(REV) -extldflags "-static"' \
+		-o ./_tmp/openstorage-sdk-auth ./cmd/openstorage-sdk-auth
 
 clean:
-	rm -rf _tmp ./cmd/openstorage-sdk-auth
+	rm -rf _tmp
 
 container: openstorage-sdk-auth
 	docker build -t $(IMAGE_TAG) .
