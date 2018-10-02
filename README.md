@@ -19,6 +19,42 @@ A container will be available, but in the meantime you can do the following:
 go install -u github.com/libopenstorage/openstorage-sdk-auth/cmd/openstorage-sdk-auth
 ```
 
+## Usage
+
+To use, you will need to first decide which key type to use to sign the tokens. Although
+shared secrets are simple, we recommend using RSA256. In the `tools/` directory you will
+find a simple script to generate private and public PEM files.
+
+You will then need to create a claims file using the specification highlighted in this
+document. Here is an example of a claims file which defines the email, name, and authorization
+of the account:
+
+```yaml
+name: Luis Pabon
+email: luis@portworx.com
+role: volumecreator
+rules:
+  - deny:
+    - openstorage.api.OpenStorageVolume/Delete
+  - allow:
+    - openstorage.api.OpenStorageVolume
+    - openstorage.api.OpenStorageIdentity
+  - deny:
+    - all
+```
+
+You can then generate a token using `openstorage-sdk-auth`. In the example below, we generate
+a token with an expiration time of 30 days. We use the sample unsecure RSA pem files part
+of this repo to sign the token.
+
+```
+openstorage-sdk-auth \
+  --auth-config=cmd/openstorage-sdk-auth/sample.yml \
+  --rsa-private-keyfile=tools/rsa_sample_unsecure_private.pem \
+  --token-duration=30d \
+  --output=private.token
+```
+
 ## Token Specification
 OpenStorage SDK tokens are JWT tokens whose _claims_ values are highlighted
 below:
