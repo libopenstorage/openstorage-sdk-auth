@@ -122,7 +122,11 @@ func main() {
 
 	// Print token
 	if len(*output) != 0 {
-		ioutil.WriteFile(*output, []byte(token), 0600)
+		err := ioutil.WriteFile(*output, []byte(token), 0600)
+		if err != nil {
+			fmt.Printf("Failed to create %s: %v", *output, err)
+			os.Exit(1)
+		}
 	} else {
 		fmt.Println(token)
 	}
