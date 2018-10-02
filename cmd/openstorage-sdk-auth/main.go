@@ -29,11 +29,18 @@ import (
 )
 
 var (
-	secret      = flag.String("shared-secret", "", "Shared secret to sign token")
-	rsaPem      = flag.String("rsa-private-keyfile", "", "RSA Private file to sign token")
-	ecdsaPem    = flag.String("ecdsa-private-keyfile", "", "ECDSA Private file to sign token")
-	duration    = flag.String("token-duration", "1d", "Duration of time where the token will be valid")
-	config      = flag.String("auth-config", "", "Auth configuaration file")
+	secret   = flag.String("shared-secret", "", "Shared secret to sign token")
+	rsaPem   = flag.String("rsa-private-keyfile", "", "RSA Private file to sign token")
+	ecdsaPem = flag.String("ecdsa-private-keyfile", "", "ECDSA Private file to sign token")
+	duration = flag.String("token-duration", "1d", "Duration of time where the token will be valid. "+
+		"Postfix the duration by using "+
+		secondDef+" for seconds, "+
+		minuteDef+" for minutes, "+
+		hourDef+" for hours, "+
+		dayDef+" for days, and "+
+		yearDef+" for years.")
+	config = flag.String("auth-config", "", "Auth account information file providing "+
+		"email, name, etc.")
 	showVersion = flag.Bool("version", false, "Show version")
 	version     = "(dev)"
 )
@@ -50,34 +57,68 @@ func main() {
 		os.Exit(1)
 	}
 
-	// This is temporary. This program will also support RSA certs
-	if len(*secret) == 0 {
-		fmt.Println("Must provide a shared secret")
-	}
+	// Get claims
 	claims := &auth.Claims{}
 	data, err := ioutil.ReadFile(*config)
 	if err != nil {
 		fmt.Printf("Failed to read %s: %v", *config, err)
 		os.Exit(1)
 	}
-
 	if err := yaml.Unmarshal(data, claims); err != nil {
 		fmt.Printf("Failed to parse %s: %v", *config, err)
 		os.Exit(1)
 	}
 
-	token, err := auth.Token(claims,
-		&auth.Signature{
-			Type: jwt.SigningMethodHS256,
-			Key:  []byte(*secret),
-		},
-		&auth.Options{
-			// Temporary
-			Expiration: time.Now().Add(time.Minute * 10).Unix(),
-		})
+	// Get duration
+	options := &auth.Options{}
+	expDuration, err := parseToDuration(*duration)
+	if err != nil {
+		fmt.Printf("Unable to parse duration")
+		os.Exit(1)
+	}
+	options.Expiration = time.Now().Add(expDuration).Unix()
+
+	// Get signature
+	signature := &auth.Signature{}
+	if len(*secret) != 0 {
+		signature.Key = []byte(*secret)
+		signature.Type = jwt.SigningMethodHS256
+	} else if len(*rsaPem) != 0 {
+		pem, err := ioutil.ReadFile(*rsaPem)
+		if err != nil {
+			fmt.Printf("Failed to read RSA file: %v", err)
+			os.Exit(1)
+		}
+		signature.Key, err = jwt.ParseRSAPrivateKeyFromPEM(pem)
+		if err != nil {
+			fmt.Printf("Failed to parse RSA file: %v", err)
+			os.Exit(1)
+		}
+		signature.Type = jwt.SigningMethodRS256
+	} else if len(*ecdsaPem) != 0 {
+		pem, err := ioutil.ReadFile(*ecdsaPem)
+		if err != nil {
+			fmt.Printf("Failed to read ECDSA file: %v", err)
+			os.Exit(1)
+		}
+		signature.Key, err = jwt.ParseECPrivateKeyFromPEM(pem)
+		if err != nil {
+			fmt.Printf("Failed to parse ECDSA file: %v", err)
+			os.Exit(1)
+		}
+		signature.Type = jwt.SigningMethodES256
+	} else {
+		fmt.Printf("Must provide a secret key to sign token")
+		os.Exit(1)
+	}
+
+	// Generate token
+	token, err := auth.Token(claims, signature, options)
 	if err != nil {
 		fmt.Printf("Failed to create token: %v", err)
 		os.Exit(1)
 	}
+
+	// Print token
 	fmt.Println(token)
 }
