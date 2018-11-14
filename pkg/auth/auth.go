@@ -22,16 +22,17 @@ import (
 
 // Rule provides a method to provide a custom authorization
 type Rule struct {
-	Allow []string `json:"allow,omitempty" yaml:"allow,omitempty"`
-	Deny  []string `json:"deny,omitempty" yaml:"deny,omitempty"`
+	Services []string `json:"services,omitempty" yaml:"services,omitempty"`
+	Apis     []string `json:"apis,omitempty" yaml:"apis,omitempty"`
 }
 
 // Claims provides information about the claims in the token
 type Claims struct {
-	Name  string `json:"name" yaml:"name"`
-	Email string `json:"email" yaml:"email"`
-	Role  string `json:"role" yaml:"role"`
-	Rules []Rule `json:"rules" yaml:"rules"`
+	Name   string   `json:"name" yaml:"name"`
+	Email  string   `json:"email" yaml:"email"`
+	Role   string   `json:"role,omitempty" yaml:"role,omitempty"`
+	Groups []string `json:"groups,omitempty" yaml:"groups,omitempty"`
+	Rules  []Rule   `json:"rules,omitempty" yaml:"rules,omitempty"`
 }
 
 // Signature describes the signature type using definitions from
@@ -59,6 +60,9 @@ func Token(
 		"role":  claims.Role,
 		"iat":   time.Now().Unix(),
 		"exp":   options.Expiration,
+	}
+	if claims.Groups != nil {
+		mapclaims["groups"] = claims.Groups
 	}
 	if claims.Rules != nil {
 		mapclaims["rules"] = claims.Rules

@@ -1,11 +1,9 @@
 name: Luis Pabon
 email: luis@portworx.com
 role: volumecreator
+groups: ["px-engineering", "kubernetes-csi"]
 rules:
-  - deny:
-    - openstorage.api.OpenStorageVolume/Delete
-  - allow:
-    - openstorage.api.OpenStorageVolume
-    - openstorage.api.OpenStorageIdentity
-  - deny:
-    - all
+  - services: ["volume", "identity"]
+    apis: ["*"]
+  - services: ["node"]
+    apis: ["inspectcurrent"]
