@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package main
+package auth
 
 import (
 	"fmt"
@@ -23,49 +23,52 @@ import (
 )
 
 const (
-	secondDef = "s"
-	minuteDef = "m"
-	hourDef   = "h"
-	dayDef    = "d"
-	yearDef   = "y"
+	SecondDef = "s"
+	MinuteDef = "m"
+	HourDef   = "h"
+	DayDef    = "d"
+	YearDef   = "y"
 
-	day  = time.Hour * 24
-	year = day * 365
+	Day  = time.Hour * 24
+	Year = Day * 365
 )
 
 var (
-	secondRegex = regexp.MustCompile("([0-9]+)" + secondDef)
-	minuteRegex = regexp.MustCompile("([0-9]+)" + minuteDef)
-	hourRegex   = regexp.MustCompile("([0-9]+)" + hourDef)
-	dayRegex    = regexp.MustCompile("([0-9]+)" + dayDef)
-	yearRegex   = regexp.MustCompile("([0-9]+)" + yearDef)
+	SecondRegex = regexp.MustCompile("([0-9]+)" + SecondDef)
+	MinuteRegex = regexp.MustCompile("([0-9]+)" + MinuteDef)
+	HourRegex   = regexp.MustCompile("([0-9]+)" + HourDef)
+	DayRegex    = regexp.MustCompile("([0-9]+)" + DayDef)
+	YearRegex   = regexp.MustCompile("([0-9]+)" + YearDef)
 )
 
-func parseToDuration(s string) (time.Duration, error) {
+// ParseToDuration takes in a "human" type duration and changes it to
+// time.Duration. The format for a human type is <number><type>. For
+// example: Five days: 5d; one year: 1y.
+func ParseToDuration(s string) (time.Duration, error) {
 
 	regexs := []struct {
 		regex    *regexp.Regexp
 		duration time.Duration
 	}{
 		{
-			regex:    secondRegex,
+			regex:    SecondRegex,
 			duration: time.Second,
 		},
 		{
-			regex:    minuteRegex,
+			regex:    MinuteRegex,
 			duration: time.Minute,
 		},
 		{
-			regex:    hourRegex,
+			regex:    HourRegex,
 			duration: time.Hour,
 		},
 		{
-			regex:    dayRegex,
-			duration: day,
+			regex:    DayRegex,
+			duration: Day,
 		},
 		{
-			regex:    yearRegex,
-			duration: year,
+			regex:    YearRegex,
+			duration: Year,
 		},
 	}
 	for _, r := range regexs {

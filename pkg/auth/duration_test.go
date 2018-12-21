@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package main
+package auth
 
 import (
 	"testing"
@@ -66,7 +66,7 @@ func TestParseDuration(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		duration, err := parseToDuration(test.s)
+		duration, err := ParseToDuration(test.s)
 		if test.expectFail {
 			assert.Error(t, err)
 		} else {
