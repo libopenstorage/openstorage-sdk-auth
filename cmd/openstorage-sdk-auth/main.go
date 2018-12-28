@@ -16,29 +16,32 @@ limitations under the License.
 package main
 
 import (
+	"encoding/base64"
 	"flag"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"time"
 
-	jwt "github.com/dgrijalva/jwt-go"
 	yaml "gopkg.in/yaml.v2"
 
 	"github.com/libopenstorage/openstorage-sdk-auth/pkg/auth"
 )
 
 var (
-	secret   = flag.String("shared-secret", "", "Shared secret to sign token")
+	secret = flag.String("shared-secret", "", "Shared secret to sign token")
+	issuer = flag.String("issuer", "openstorage-sdk-auth",
+		"Issuer name of token. Do not use https:// in the issuer since it could indicate "+
+			"that this is an OpenID Connect issuer.")
 	rsaPem   = flag.String("rsa-private-keyfile", "", "RSA Private file to sign token")
 	ecdsaPem = flag.String("ecdsa-private-keyfile", "", "ECDSA Private file to sign token")
 	duration = flag.String("token-duration", "1d", "Duration of time where the token will be valid. "+
 		"Postfix the duration by using "+
-		secondDef+" for seconds, "+
-		minuteDef+" for minutes, "+
-		hourDef+" for hours, "+
-		dayDef+" for days, and "+
-		yearDef+" for years.")
+		auth.SecondDef+" for seconds, "+
+		auth.MinuteDef+" for minutes, "+
+		auth.HourDef+" for hours, "+
+		auth.DayDef+" for days, and "+
+		auth.YearDef+" for years.")
 	config = flag.String("auth-config", "", "Auth account information file providing "+
 		"email, name, etc.")
 	showVersion = flag.Bool("version", false, "Show version")
@@ -70,9 +73,18 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Create a mostly unique id if none found
+	if len(claims.Subject) == 0 {
+		claims.Subject = base64.StdEncoding.EncodeToString([]byte("openstorage.io/" +
+			claims.Name + "/" +
+			claims.Email))
+	}
+
 	// Get duration
-	options := &auth.Options{}
-	expDuration, err := parseToDuration(*duration)
+	options := &auth.Options{
+		Issuer: *issuer,
+	}
+	expDuration, err := auth.ParseToDuration(*duration)
 	if err != nil {
 		fmt.Printf("Unable to parse duration")
 		os.Exit(1)
@@ -80,36 +92,19 @@ func main() {
 	options.Expiration = time.Now().Add(expDuration).Unix()
 
 	// Get signature
-	signature := &auth.Signature{}
+	var signature *auth.Signature
 	if len(*secret) != 0 {
-		signature.Key = []byte(*secret)
-		signature.Type = jwt.SigningMethodHS256
+		signature, err = auth.NewSignatureSharedSecret(*secret)
 	} else if len(*rsaPem) != 0 {
-		pem, err := ioutil.ReadFile(*rsaPem)
-		if err != nil {
-			fmt.Printf("Failed to read RSA file: %v", err)
-			os.Exit(1)
-		}
-		signature.Key, err = jwt.ParseRSAPrivateKeyFromPEM(pem)
-		if err != nil {
-			fmt.Printf("Failed to parse RSA file: %v", err)
-			os.Exit(1)
-		}
-		signature.Type = jwt.SigningMethodRS256
+		signature, err = auth.NewSignatureRSAFromFile(*rsaPem)
 	} else if len(*ecdsaPem) != 0 {
-		pem, err := ioutil.ReadFile(*ecdsaPem)
-		if err != nil {
-			fmt.Printf("Failed to read ECDSA file: %v", err)
-			os.Exit(1)
-		}
-		signature.Key, err = jwt.ParseECPrivateKeyFromPEM(pem)
-		if err != nil {
-			fmt.Printf("Failed to parse ECDSA file: %v", err)
-			os.Exit(1)
-		}
-		signature.Type = jwt.SigningMethodES256
+		signature, err = auth.NewSignatureECDSAFromFile(*ecdsaPem)
 	} else {
 		fmt.Printf("Must provide a secret key to sign token")
+		os.Exit(1)
+	}
+	if err != nil {
+		fmt.Printf("Failed: %v\n", err)
 		os.Exit(1)
 	}
 
