@@ -14,7 +14,7 @@ libraries for users and developers to create auth tokens for OpenStorage SDK.
 A container will be available, but in the meantime you can do the following:
 
 ```
-go install -i github.com/libopenstorage/openstorage-sdk-auth/cmd/openstorage-sdk-auth
+go install github.com/libopenstorage/openstorage-sdk-auth/cmd/openstorage-sdk-auth
 ```
 
 ## Usage
