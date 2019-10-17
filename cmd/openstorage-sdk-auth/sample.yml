@@ -1,10 +1,5 @@
 name: Luis Pabon
-sub: luis@portworx.com/lpabon
+sub: id/luis@portworx.com
 email: luis@portworx.com
-role: volumecreator
+roles: ["system.user"]
 groups: ["px-engineering", "kubernetes-csi"]
-rules:
-  - services: ["volume", "identity"]
-    apis: ["*"]
-  - services: ["node"]
-    apis: ["inspectcurrent"]

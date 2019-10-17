@@ -20,32 +20,23 @@ import (
 	"time"
 )
 
-// Rule provides a method to provide a custom authorization
-// Rules can also be set to `*` to allow all services or apis.
-type Rule struct {
-	// Services is the gRPC service name in `OpenStorage<service name>` in lowercase
-	Services []string `json:"services,omitempty" yaml:"services,omitempty"`
-	// Apis is the API name in the service in lowercase
-	Apis []string `json:"apis,omitempty" yaml:"apis,omitempty"`
-}
-
 // Claims provides information about the claims in the token
 // See https://openid.net/specs/openid-connect-core-1_0.html#IDToken
 // for more information.
 type Claims struct {
+	// Issuer is the token issuer. For selfsigned token do not prefix
+	// with `https://`.
+	Issuer string `json:"iss"`
 	// Subject identifier. Unique ID of this account
 	Subject string `json:"sub" yaml:"sub"`
 	// Account name
 	Name string `json:"name" yaml:"name"`
 	// Account email
 	Email string `json:"email" yaml:"email"`
-	// (optional) Role of this account
-	Role string `json:"role,omitempty" yaml:"role,omitempty"`
+	// Roles of this account
+	Roles []string `json:"roles,omitempty" yaml:"roles,omitempty"`
 	// (optional) Groups in which this account is part of
 	Groups []string `json:"groups,omitempty" yaml:"groups,omitempty"`
-	// (optional) RBAC rules for the OpenStorage SDK
-	// (DO NOT USE) This will be removed from the claims
-	Rules []Rule `json:"rules,omitempty" yaml:"rules,omitempty"`
 }
 
 // Options provide any options to apply to the token
@@ -68,15 +59,12 @@ func Token(
 		"iss":   options.Issuer,
 		"email": claims.Email,
 		"name":  claims.Name,
-		"role":  claims.Role,
+		"roles": claims.Roles,
 		"iat":   time.Now().Unix(),
 		"exp":   options.Expiration,
 	}
 	if claims.Groups != nil {
 		mapclaims["groups"] = claims.Groups
-	}
-	if claims.Rules != nil {
-		mapclaims["rules"] = claims.Rules
 	}
 	token := jwt.NewWithClaims(signature.Type, mapclaims)
 	signedtoken, err := token.SignedString(signature.Key)

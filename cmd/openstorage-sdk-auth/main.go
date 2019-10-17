@@ -30,7 +30,7 @@ import (
 
 var (
 	secret = flag.String("shared-secret", "", "Shared secret to sign token")
-	issuer = flag.String("issuer", "openstorage-sdk-auth",
+	issuer = flag.String("issuer", "openstorage.io",
 		"Issuer name of token. Do not use https:// in the issuer since it could indicate "+
 			"that this is an OpenID Connect issuer.")
 	rsaPem   = flag.String("rsa-private-keyfile", "", "RSA Private file to sign token")
