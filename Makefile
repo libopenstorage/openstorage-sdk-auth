@@ -1,7 +1,6 @@
 .PHONY: all openstorage-sdk-auth clean test
 
-#REV=$(shell git describe --long --tags --match='v*' --dirty)
-REV=0.1
+REV=$(shell git describe --long --tags --match='v*' --dirty)
 
 all: openstorage-sdk-auth
 
