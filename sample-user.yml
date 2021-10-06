@@ -1,5 +1,5 @@
-name: Luis Pabon
-sub: id/luis@portworx.com
-email: luis@portworx.com
+name: tenant-a
+email: tenant@tenant-a.com
+sub: tenant@tenant-a.com/tenant
 roles: ["system.user"]
-groups: ["px-engineering", "kubernetes-csi"]
+groups: ["developers"]
